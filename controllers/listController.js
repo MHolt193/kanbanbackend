@@ -1,13 +1,14 @@
 const List = require("../models/listModel");
 
 const getList = async (req, res) => {
-  const list = await List.find({ board: req.board.id });
+  const list = await List.find({ board: req.body.boardId });
 
   res.status(200).json(list);
 };
 
 const setList = async (req, res) => {
-  const item = List.create({
+  const item = await List.create({
+    board: req.body.boardId,
     title: req.body.title,
     description: req.body.description,
     subtasks: req.body.subtasks,
@@ -18,4 +19,4 @@ const setList = async (req, res) => {
   res.status(200).json(item);
 };
 
-module.extracts = {setList, getList}
+module.exports = {setList, getList}

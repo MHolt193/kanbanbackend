@@ -9,4 +9,4 @@ router.post("/", protect, setList);
 //router.put("/:id", protect, editList);
 //router.delete("/:id", protect, deleteList);
 
-modules.exports = router;
+module.exports = router;
