@@ -15,6 +15,8 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/api/boards', require('./routes/boardRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/boards/list', require('./routes/listRoutes'));
+
 
 
 
