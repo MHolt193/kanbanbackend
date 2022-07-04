@@ -9,7 +9,7 @@ const listSchema = mongoose.Schema(
     },
     title: String,
     description: String,
-    subtasks: [String],
+    subtasks: [Object],
     status: String,
   },
   { timestamps: true }
