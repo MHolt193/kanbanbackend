@@ -27,4 +27,17 @@ const setList = async (req, res) => {
   res.status(200).json(item);
 };
 
-module.exports = { setList, getList, getItem };
+const deleteItem = async (req, res) => {
+  const deletedItem = await List.findByIdAndDelete(req.params.id);
+
+  res.status(200).json(deletedItem);
+
+};
+
+const editItem = async (req, res) => {
+  const editedItem = await List.findByIdAndUpdate(req.params.id, req.body)
+
+  res.status(200).json(editedItem);
+}
+
+module.exports = { setList, getList, getItem, deleteItem, editItem };
