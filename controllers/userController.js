@@ -71,6 +71,7 @@ const getUser = async (req, res) => {
     email,
   });
 };
+
 const searchUser = async (req, res) => {
   try {
     const search = await User.find({ $text: { $search: req.body.name } }).then(
@@ -83,15 +84,67 @@ const searchUser = async (req, res) => {
           res.status(200).json({
             users: sendToClient,
           });
-        }else{
-            res.status(400).json({
-                message: 'Couldn\'t find user'
-            })
+        } else {
+          res.status(400).json({
+            message: "Couldn't find user",
+          });
         }
       }
     );
   } catch (error) {
     console.log(error);
+  }
+};
+
+const inviteUser = async (req, res) => {
+  await req.body.users.forEach((item) => {
+    User.findById(item.id)
+      .then(async (result) => {
+        //check if user already invited
+        if (
+          !result.notifications.includes(
+            result.notifications.find(
+              (notification) => notification.invitedTo === item.board
+            )
+          )
+        ) {
+          console.log(item);
+          let sentBy = await User.findById(item.invitedBy);
+          User.updateOne(
+            { _id: result._id },
+            {
+              $push: {
+                notifications: {
+                  invitedTo: item.board,
+                  status: item.status,
+                  boardName: item.boardName,
+                  invitedBy: sentBy.name,
+                },
+              },
+            }
+          ).catch((error) => {
+            console.log(error);
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+
+  res.status(200).json({
+    message: "Invites Recieved",
+  });
+};
+
+const getNotifications = async (req, res) => {
+  const userNotifications = await User.findById(req.params.id);
+  if (userNotifications.notifications !== undefined) {
+    res.status(200).json({
+      invites: userNotifications.notifications.filter((el)=>{
+        return el.status === 'invited';
+      }),
+    });
   }
 };
 
@@ -108,4 +161,6 @@ module.exports = {
   loginUser,
   getUser,
   searchUser,
+  inviteUser,
+  getNotifications,
 };
