@@ -7,7 +7,16 @@ const boardSchema = mongoose.Schema({
         ref: 'User'
     },
     title: String,
-    todo: Array,
+    assignedUsers: [
+        {
+            userId: {
+                type: String
+            },
+            role: {
+                type: String
+            }
+        }
+    ],
 }, {timestamps: true})
 
 module.exports = mongoose.model("Board", boardSchema)
