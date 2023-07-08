@@ -30,15 +30,19 @@ const updateBoards = (req, res) => {
 
 const deleteBoard = async (req, res) => {
   const id = req.params.id;
-  const deletedBoard = await Board.findOneAndDelete({ _id: id, user: req.user._id});
-  if(deletedBoard !== null){
+  const deletedBoard = await Board.findOneAndDelete({
+    _id: id,
+    user: req.user._id,
+  });
+  if (deletedBoard !== null) {
     const deleteBoardList = await List.deleteMany({ board: id });
     const boards = await Board.find({ user: req.user.id });
-  res.status(200).json(boards);
-  }else{
-    res.status(400).json(
-      "Not authorized to delete this board"
-    )
+    const sharedBoards = await Board.find({
+      assignedUsers: { $elemMatch: { userId: req.user.id } },
+    });
+    res.status(200).json({boards, sharedBoards});
+  } else {
+    res.status(400).json("Not authorized to delete this board");
   }
 };
 
