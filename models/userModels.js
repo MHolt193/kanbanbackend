@@ -15,7 +15,25 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add password"],
     },
-    notifications: [Object],
+    notifications: [
+      {
+        id: {
+          type: mongoose.Types.ObjectId,
+        },
+        invitedTo: {
+          type: String,
+        },
+        status: {
+          type: String,
+        },
+        boardName: {
+          type: String,
+        },
+        invitedBy: {
+          type: String,
+        },
+      },
+    ],
     sharedBoards: [Object],
   },
   { timestamps: true }
