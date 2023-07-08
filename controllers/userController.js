@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/userModels");
+const Board = require("../models/boardModels");
 
 const registerUser = async (req, res) => {
   try {
@@ -141,11 +142,33 @@ const getNotifications = async (req, res) => {
   const userNotifications = await User.findById(req.params.id);
   if (userNotifications.notifications !== undefined) {
     res.status(200).json({
-      invites: userNotifications.notifications.filter((el)=>{
-        return el.status === 'invited';
+      invites: userNotifications.notifications.filter((el) => {
+        return el.status === "invited";
       }),
     });
   }
+};
+
+const updateNotifications = async (req, res) => {
+  if (req.body.response === "accept") {
+    const updatedNotifications = await User.findOneAndUpdate(
+      { _id: req.params.id, "notifications._id": req.body.notificationId },
+      { $set: { "notifications.$.status": "accepted" } }
+    );
+    const updateBoard = await Board.findByIdAndUpdate(req.body.invitedTo, {
+      $push:{
+        assignedUsers:{
+          userId: req.params.id,
+          role: "user"
+        }
+      }
+    });
+    console.log(updateBoard)
+  }
+
+  res.status(200).json({
+    recieved: req.body,
+  });
 };
 
 //generate jwt
@@ -163,4 +186,5 @@ module.exports = {
   searchUser,
   inviteUser,
   getNotifications,
+  updateNotifications,
 };
